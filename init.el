@@ -26,9 +26,7 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     swift
-     php
-     nginx
+     emacs-lisp
      better-defaults
      spacemacs-layouts
      ivy
@@ -42,18 +40,12 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup nil)
      git
      dash
-     pdf-tools
      html
-     clojure
      (org :variables
-          org-enable-github-support t
-          org-enable-reveal-js-support t
           org-want-todo-bindings t)
      colors
      (osx :variables osx-command-as 'super)
-     ;; vinegar
      github
-     ruby
      (shell :variables
             shell-default-shell 'ansi-term
             shell-default-height 30
@@ -62,14 +54,10 @@ This function should only modify configuration layer settings."
                      spell-checking-enable-by-default nil)
      ranger
      version-control
-     rcirc
      tmux
      yaml
      docker
-     elm
      restclient
-     lua
-     chrome
 
      ;; TheBB's layers
      ;; https://github.com/TheBB/spacemacs-layers
@@ -78,7 +66,6 @@ This function should only modify configuration layer settings."
 
      ;; Personal layers
      aj-elixir
-     aj-emacs-lisp
      aj-javascript
      aj-typescript
      auto-correct
@@ -101,7 +88,8 @@ This function should only modify configuration layer settings."
      graphviz-dot-mode
      helpful
      org-gcal
-     xclip
+     base16-theme
+     color-theme-sanityinc-tomorrow
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -151,10 +139,11 @@ It should only modify the values of Spacemacs settings."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style '(hybrid :variables
-                                       hybrid-mode-default-state 'normal
-                                       hybrid-mode-enable-evilified-state t
-                                       hybrid-mode-enable-hjkl-bindings nil)
+   dotspacemacs-editing-style 'vim
+   ;; dotspacemacs-editing-style '(hybrid :variables
+   ;;                                     hybrid-mode-default-state 'normal
+   ;;                                     hybrid-mode-enable-evilified-state t
+   ;;                                     hybrid-mode-enable-hjkl-bindings nil)
    ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -179,19 +168,16 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(monokai
-                         whiteboard
-                         solarized-light
-                         flatui)
+   dotspacemacs-themes '(sanityinc-tomorrow-eighties)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("SF Mono for Powerline"
-                               :size 14
-                               :weight light
+   dotspacemacs-default-font '("PragmataPro Mono"
+                               :size 18
+                               :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands `M-x' (after pressing on the leader key).
@@ -233,7 +219,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-display-default-layout nil
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts nil
+   dotspacemacs-auto-resume-layouts t
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands.
    dotspacemacs-auto-generate-layout-names nil
@@ -394,7 +380,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
         (normal-top-level-add-subdirs-to-load-path)))
   (require 'init-evil)
   (require 'init-html)
-  (require 'init-php)
   (require 'init-sass)
 
   (setq node-add-modules-path t)
@@ -440,11 +425,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (setq flycheck-display-errors-delay 0.5)
 
-  ;; Ruby
-  ;; Treat _ as a word character
-  (with-eval-after-load 'ruby-mode
-    (modify-syntax-entry ?_ "w" ruby-mode-syntax-table))
-
   ;; Company
   ;; Fuzzy completion
   ;; (with-eval-after-load 'company
@@ -452,14 +432,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; Speed up autocomplete popup
   (setq company-idle-delay 0.1)
 
-  (setq message-send-mail-function 'smtpmail-send-it)
-  (setq message-kill-buffer-on-exit t)
 
-  ;; RCIRC
-  ;; Keep line at margin-bottom: ...
-  (add-hook 'rcirc-mode-hook
-            (lambda ()
-              (set (make-local-variable 'scroll-conservatively) 8192)))
   (add-hook 'before-make-frame-hook
             (lambda ()
               (unless window-system
@@ -477,8 +450,6 @@ you should place your code here."
   (require 'init-magit)
   (require 'init-org)
   (require 'init-terminal-cursor)
-  (require 'init-flyspell)
-  (require 'init-xclip)
 
   (require 'company-simple-complete)
   (require 'fill-or-unfill)
@@ -488,22 +459,44 @@ you should place your code here."
     :defer t
     :commands
     (helpful-function helpful-command helpful-macro))
+  ;; Stop demanding confirmation to go over 50 characters on first line
+  (remove-hook 'git-commit-finish-query-functions
+               'git-commit-check-style-conventions)
+  (remove-hook 'server-switch-hook 'magit-commit-diff)
+
+  ;; Keybindings
+  (defun bb/define-key (keymap &rest bindings)
+    (declare (indent 1))
+    (while bindings
+      (define-key keymap (pop bindings) (pop bindings))))
+
+  ;; OS X stuff
+  (when (memq window-system '(ns mac))
+    ;; (setq-default line-spacing 0.1)
+    ;; enable emoji font as fallback
+    ;; (set-fontset-font t 'unicode "Symbola" nil 'prepend)
+    ;; enable ligatures on OS X.
+    ;; (when (functionp 'mac-auto-operator-composition-mode)
+    ;;   (mac-auto-operator-composition-mode))
+
+    (spacemacs/set-leader-keys "ol" 'mac-auto-operator-composition-mode)
+
+    (setq
+     ns-use-native-fullscreen nil
+     mac-command-modifier 'super
+     mac-option-modifier 'meta
+     ns-auto-hide-menu-bar nil
+     insert-directory-program "/usr/local/bin/gls")
+
+    (bb/define-key global-map
+      [home] 'beginning-of-line
+      [end] 'end-of-line)
+    )
 
   ;; Prefer dumb-jump over evil to definition
   (setq spacemacs-default-jump-handlers (delete 'dumb-jump-go spacemacs-default-jump-handlers))
   (push 'dumb-jump-go spacemacs-default-jump-handlers)
   (setq dumb-jump-prefer-searcher 'rg)
-
-  ;; Edit from Chrome
-  (add-to-list 'edit-server-new-frame-alist '(undecorated . nil))
-  (with-eval-after-load 'edit-server
-    (add-hook 'edit-server-edit-mode-hook
-              (lambda ()
-                (delete-other-windows)
-                (auto-fill-mode -1)
-                (visual-line-mode)))
-    (add-hook 'edit-server-done-hook
-              (lambda () (shell-command "open -a \"Google Chrome\""))))
 
   ;; Delete consecutive dupes from company in case they differ by annotation only
   ;; https://github.com/company-mode/company-mode/issues/528
@@ -584,9 +577,6 @@ you should place your code here."
          x
        (car x))))
 
-  ;; Enable /sudo:root@server:
-  (add-to-list 'tramp-default-proxies-alist '(".*" "\\`root\\'" "/ssh:%h:"))
-
   (setq
    ;; Use bash because it's faster
    shell-file-name "/bin/bash"
@@ -600,41 +590,16 @@ you should place your code here."
 
    ;; Miscellaneous
    vc-follow-symlinks t
-   require-final-newline t
+   require-final-newline t)
 
-   ;; Enable midnight-mode to clean old buffers every day
-   midnight-mode t)
-
-  ;; Key Bindings
-  (global-set-key (kbd "M-]") 'sp-slurp-hybrid-sexp)
-  (global-set-key (kbd "C-x C-l") 'evil-complete-next-line)
-
-  (spacemacs/set-leader-keys "SPC" 'avy-goto-char-2)
   (setq avy-timeout-seconds 0.2)
-
-  (spacemacs/set-leader-keys "fel" 'counsel-find-library)
-
-  ;; Profiler bindings
-  (defun profiler-start-cpu ()
-    (interactive)
-    (profiler-start 'cpu))
-  (spacemacs/set-leader-keys "ops" 'profiler-start-cpu)
-  (spacemacs/set-leader-keys "opr" 'profiler-report)
-  (spacemacs/set-leader-keys "opt" 'profiler-stop)
-  (spacemacs/set-leader-keys "opx" 'profiler-reset)
-  (spacemacs/set-leader-keys "oper" 'elp-results)
-
-  ;; Bury buffers instead of killing them by default
-  (spacemacs/set-leader-keys "bd" 'bury-buffer)
-  (spacemacs/set-leader-keys "bk" 'spacemacs/kill-this-buffer)
-  (spacemacs/set-leader-keys "bK" 'spacemacs/kill-other-buffers)
 
   ;; Use C-j in place of C-x
   ;; (define-key key-translation-map "\C-j" "\C-x")
   (global-set-key (kbd "<s-return>") 'spacemacs/toggle-fullscreen-frame)
 
   ;; Word wrap in text buffers
-  (add-hook 'text-mode-hook 'auto-fill-mode)
+  ;; (add-hook 'text-mode-hook 'auto-fill-mode)
 
   ;; Don't copy text to system clipboard while selecting it
   (fset 'evil-visual-update-x-selection 'ignore)
@@ -649,47 +614,6 @@ you should place your code here."
 
   (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
 
-  (dotimes (n 6)
-    (let ((n (+ n 2)))
-      ;; Map s-<number> to switch layouts
-      (global-set-key (kbd (format "s-%d" n)) (intern (format "spacemacs/persp-switch-to-%d" n)))
-      ;; Map M-<number> to workspace switching
-      (let ((key (kbd (format "M-%d" n))))
-        (define-key winum-keymap key nil)
-        (global-unset-key key)
-        (global-set-key key (intern (format "eyebrowse-switch-to-window-config-%d" n))))))
-  (global-set-key (kbd "s-1") 'aj/persp-org-agenda)
-  (global-set-key (kbd "s-8") 'spacemacs/custom-layouts-transient-state/spacemacs/custom-perspective-@Org-and-exit)
-  (global-set-key (kbd "s-9") 'spacemacs/custom-layouts-transient-state/spacemacs/custom-perspective-@Spacemacs-and-exit)
-
-  ;; Prevent font size changes from resizing frame
-  (setq frame-inhibit-implied-resize t)
-  ;; Change entire frame font size
-  (defun my-alter-frame-font-size (fn)
-    (let* ((current-font-name (frame-parameter nil 'font))
-           (decomposed-font-name (x-decompose-font-name current-font-name))
-           (font-size (string-to-number (aref decomposed-font-name 5))))
-      (aset decomposed-font-name 5 (int-to-string (funcall fn font-size)))
-      (set-frame-font (x-compose-font-name decomposed-font-name))))
-
-  (defun my-inc-frame-font-size ()
-    (interactive)
-    (my-alter-frame-font-size '1+))
-
-  (defun my-dec-frame-font-size ()
-    (interactive)
-    (my-alter-frame-font-size '1-))
-
-  (global-set-key (kbd "s-+") 'my-inc-frame-font-size)
-  (global-set-key (kbd "s-=") 'my-inc-frame-font-size)
-  (global-set-key (kbd "s--") 'my-dec-frame-font-size)
-  (global-set-key (kbd "C-+") 'spacemacs/scale-up-font)
-  (global-set-key (kbd "C-=") 'spacemacs/scale-up-font)
-  (global-set-key (kbd "C--") 'spacemacs/scale-down-font)
-
-  ;; Remove binding to open font panel
-  (global-unset-key (kbd "s-t"))
-
   ;; Pairing stuff
   (global-set-key (kbd "<end>") 'evil-end-of-line)
 
@@ -697,42 +621,3 @@ you should place your code here."
   (when (file-exists-p "~/.emacs-private.el")
     (load-file "~/.emacs-private.el")))
 
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(max-specpdl-size 2000)
- '(package-selected-packages
-   (quote
-    (password-generator impatient-mode elisp-refs loop list-utils helpful org-brain prettier-js evil-org parinfer ruby-refactor company-php ac-php-core xcscope sayid evil-lion lispyville flatui-theme company-lua ghub+ apiwrap ghub mu4e-maildirs-extension mu4e-alert gmail-message-mode ham-mode html-to-markdown flymd edit-server phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode swift-mode counsel-gtags esup nginx-mode string-inflection symon xclip browse-at-remote lua-mode gnuplot-mode wgrep smex rjsx-mode ivy-purpose ivy-hydra flyspell-correct-ivy counsel-dash org-mobile-sync shift-number eslintd-fix vmd-mode request-deferred deferred org-gcal solarized-theme fuzzy magithub flycheck-dogma flycheck-dialyxir pdf-tools winum counsel-projectile counsel unfill wgrep-ag eros vimrc-mode dactyl-mode nameless evil-multiedit add-node-modules-path org-tree-slide ox-reveal restclient-helm ob-restclient company-restclient know-your-http-well hide-comnt package-lint ob-elixir helm-purpose window-purpose imenu-list minitest pug-mode tide typescript-mode restclient ob-http zoutline parent-mode goto-chg undo-tree diminish flx seq spinner bind-key pkg-info epl flycheck-credo flycheck-package osx-dictionary company-flow dumb-jump ht flycheck-flow helm-gtags ggtags emoji-cheat-sheet-plus editorconfig company-emoji org marshal flycheck-mix evil-unimpaired popup evil-terminal-cursor-changer org-projectile mwim github-search flycheck-elm elm-mode yaml-mode dockerfile-mode docker tablist docker-tramp flyspell-correct-helm anzu highlight ox-gfm color-identifiers-mode flyspell-correct align-cljlet iedit nlinum-relative nlinum bind-map dash evil-visual-mark-mode ruby-end s ivy async hydra org-download projectile smartparens helm helm-core avy package-build evil eyebrowse column-enforce-mode clojure-snippets clj-refactor inflections edn peg cider-eval-sexp-fu cider queue clojure-mode evil-cleverparens paredit xterm-color web-mode web-beautify toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop shackle scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder rcirc-notify rcirc-color rbenv ranger rake rainbow-mode rainbow-identifiers pbcopy osx-trash orgit org-repo-todo org-present org-pomodoro alert log4e gntp org-plus-contrib org-bullets multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-gh-pulls macrostep livid-mode skewer-mode simple-httpd lispy swiper less-css-mode launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jade-mode htmlize helm-gitignore request helm-flyspell helm-dash helm-css-scss helm-company helm-c-yasnippet haml-mode graphviz-dot-mode gnuplot gitignore-mode github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh logito pcache gh-md flycheck-pos-tip flycheck floobits evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help erlang emmet-mode elisp-slime-nav dtrt-indent diff-hl deft dash-at-point company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-flx coffee-mode chruby bundler inf-ruby auto-yasnippet yasnippet auto-dictionary auto-compile packed alchemist company elixir-mode ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package spacemacs-theme smooth-scrolling restart-emacs rainbow-delimiters quelpa popwin persp-mode pcre2el paradox page-break-lines open-junk-file neotree move-text monokai-theme lorem-ipsum linum-relative link-hint leuven-theme info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery f expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu define-word clean-aindent-mode buffer-move bracketed-paste auto-highlight-symbol aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
- '(paradox-github-token t)
- '(safe-local-variable-values
-   (quote
-    ((prettier-js-args "--tab-width" "4" "--trailing-comma" "es5")
-     (create-lockfiles . t))))
- '(send-mail-function (quote mailclient-send-it)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(avy-lead-face ((t (:background "#20211c" :foreground "#F92672"))))
- '(avy-lead-face-0 ((t (:background "#20211c" :foreground "#e5236a"))))
- '(avy-lead-face-1 ((t (:background "#20211c" :foreground "#d32062"))))
- '(avy-lead-face-2 ((t (:background "#20211c" :foreground "#c41e5b"))))
- '(aw-leading-char-face ((t (:foreground "#F92672" :height 8.0))))
- '(diff-refine-added ((t (:background "#394e10" :foreground "#A6E22E"))))
- '(diff-refine-removed ((t (:background "#430b1e" :foreground "#F92672"))))
- '(hl-line ((t (:background "#33362d"))))
- '(ivy-highlight-face ((t (:foreground "#A1EFE4"))))
- '(sp-show-pair-match-face ((t (:background "#AE81FF" :foreground "#272822" :inverse-video nil :weight normal)))))
-)

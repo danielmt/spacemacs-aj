@@ -61,8 +61,7 @@
     :init
     (progn
       (add-hook 'rjsx-mode-hook 'prettier-js-mode)
-      (setq prettier-js-args '(
-                               "--trailing-comma" "es5"
-                               "--bracket-spacing" "false"
-                               "--no-semi"
-                               "--single-quote")))))
+      (setq
+        prettier-js-width-mode nil
+        prettier-js-args '("--print-width" "120"
+                           "--single-quote")))))
