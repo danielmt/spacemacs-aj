@@ -36,6 +36,8 @@
                   #'aj-javascript/js-jsx-indent-line-align-closing-bracket)
       (add-hook 'rjsx-mode-hook #'aj-javascript/eslintd-set-flycheck-executable t))
     :config
+    (define-key rjsx-mode-map "<" nil)
+    (define-key rjsx-mode-map (kbd "C-d") nil)
     (modify-syntax-entry ?_ "w" js2-mode-syntax-table)))
 
 (defun aj-javascript/post-init-add-node-modules-path ()
