@@ -29,53 +29,41 @@ This function should only modify configuration layer settings."
      emacs-lisp
      better-defaults
      spacemacs-layouts
-     ivy
-     ;; helm
-     (markdown :variables
-               markdown-live-preview-engine 'vmd)
+     helm
+     markdown
      (syntax-checking :variables
                       syntax-checking-enable-tooltips t)
      (auto-completion :variables
+                      auto-completion-return-key-behavior 'complete
+                      auto-completion-tab-key-behavior 'cycle
                       auto-completion-enable-sort-by-usage nil
-                      auto-completion-enable-snippets-in-popup nil)
+                      auto-completion-enable-snippets-in-popup nil
+                      :disabled-for org)
      git
      dash
      html
-     (org :variables
-          org-want-todo-bindings t)
+     org
      colors
      (osx :variables osx-command-as 'super)
-     github
-     (shell :variables
-            shell-default-shell 'ansi-term
-            shell-default-height 30
-            shell-default-position 'bottom)
-     (spell-checking :variables
-                     spell-checking-enable-by-default nil)
      ranger
      version-control
-     tmux
      yaml
-     docker
+     ;;docker
      restclient
+     deft
 
      ;; TheBB's layers
      ;; https://github.com/TheBB/spacemacs-layers
      ;; no-dots
-     evil-little-word
+     ;; evil-little-word
 
      ;; Personal layers
-     aj-elixir
+     ;; aj-elixir
      aj-javascript
      aj-typescript
-     auto-correct
-     ;; cleverparens-lispy
-     contextual-menubar
      fix-git-autorevert
      flow
-     frame-geometry
      match-indent
-     shift-number
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -83,11 +71,7 @@ This function should only modify configuration layer settings."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
-     evil-terminal-cursor-changer
      company-flx
-     graphviz-dot-mode
-     helpful
-     org-gcal
      base16-theme
      color-theme-sanityinc-tomorrow
      )
@@ -382,6 +366,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (require 'init-html)
   (require 'init-sass)
 
+  (setq-default
+   ;; editor
+   truncate-lines t
+   require-final-newline t
+   ring-bell-function 'ignore
+
+   ;; ranger options
+   ranger-override-dired t
+   ranger-ignored-extensions '("mkv" "iso" "mp4" "png" "jpg" "jpeg" "gif" "ttf" "otf" "DS_Store"))
+
   (setq node-add-modules-path t)
 
   ;; Fix powerline separator colors on mac
@@ -396,17 +390,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq exec-path-from-shell-arguments '("-l"))
   (add-to-list 'auto-mode-alist '("\\.?\\(bashrc\\|zshrc\\|shellrc\\|bash_profile\\)" . sh-mode))
   (add-to-list 'auto-mode-alist '("\\.?\\(eslintrc\\)" . json-mode))
-
-  ;; Require certificates to actually be valid (this may require additional configuration,)
-  ;; https://glyph.twistedmatrix.com/2015/11/editor-malware.html
-  (let ((trustfile "/usr/local/etc/libressl/cert.pem"))
-    (setq tls-program
-          (list
-           (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                   (if (eq window-system 'w32) ".exe" "") trustfile)))
-    (setq gnutls-trustfiles (list trustfile)))
-  (setq gnutls-verify-error nil)
-  (setq tls-checktrust t)
 
   ;; This makes it so that the window will only split vertically (top and
   ;; bottom) if there are at least 100 lines visible. In practice, this makes it
@@ -424,6 +407,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq sp-highlight-pair-overlay nil)
 
   (setq flycheck-display-errors-delay 0.5)
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
   ;; Company
   ;; Fuzzy completion
@@ -432,11 +416,12 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; Speed up autocomplete popup
   (setq company-idle-delay 0.1)
 
-
   (add-hook 'before-make-frame-hook
             (lambda ()
               (unless window-system
-                (menu-bar-mode -1)))))
+                (menu-bar-mode -1))))
+
+  )
 
 
 (defun dotspacemacs/user-config ()
@@ -448,17 +433,45 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
   (require 'init-magit)
-  (require 'init-org)
-  (require 'init-terminal-cursor)
 
-  (require 'company-simple-complete)
-  (require 'fill-or-unfill)
+  ;; (require 'company-simple-complete)
   (require 'quiet-emacs)
 
-  (use-package helpful
-    :defer t
-    :commands
-    (helpful-function helpful-command helpful-macro))
+  (indent-guide-global-mode)
+
+  (setq
+
+   create-lockfiles nil
+
+   avy-all-windows 'all-frames
+   deft-directory "~/Dropbox/notes"
+
+   ;; indent
+   indent-tabs-mode nil
+   tab-width 2
+   default-tab-width 2
+   standard-indent 2
+
+   ;; helm/ranger
+   helm-ag-use-grep-ignore-list t
+   ranger-cleanup-on-disable t
+   ranger-show-dotfiles nil
+
+   ;; projectile
+   projectile-enable-caching t
+   projectile-globally-ignored-directories
+   '(".idea" ".meteor" ".eunit" ".git" ".hg" ".fslckout" ".bzr" "_darcs" ".tox" ".svn" "node_modules" "vendor" "Godeps" "dist" "vendor" "__snapshots__")
+   projectile-globally-ignored-files
+   '(".DS_Store" "*.swp" ".tern-port")
+   grep-find-ignored-directories projectile-globally-ignored-directories
+   grep-find-ignored-files projectile-globally-ignored-files
+
+   powerline-default-separator 'utf-8
+
+   mouse-wheel-scroll-amount '(2 ((shift) . 1) ((control) . nil))
+   mouse-wheel-progressive-speed nil
+   )
+
   ;; Stop demanding confirmation to go over 50 characters on first line
   (remove-hook 'git-commit-finish-query-functions
                'git-commit-check-style-conventions)
@@ -493,6 +506,13 @@ you should place your code here."
       [end] 'end-of-line)
     )
 
+  ;; fix hash key
+  (define-key winum-keymap "\M-3" nil)
+  (global-set-key (kbd "M-3")(lambda () (interactive) (insert "#")))
+
+  (bb/define-key evil-motion-state-map
+    [backspace] 'smex)
+
   ;; Prefer dumb-jump over evil to definition
   (setq spacemacs-default-jump-handlers (delete 'dumb-jump-go spacemacs-default-jump-handlers))
   (push 'dumb-jump-go spacemacs-default-jump-handlers)
@@ -514,7 +534,7 @@ you should place your code here."
    sh-indentation 2
    css-indent-offset 2)
 
-  (spacemacs/enable-flycheck 'sh-mode)
+  ;; (spacemacs/enable-flycheck 'sh-mode)
 
   ;; Prevent persp from loading existing perspectives when opening new frames.
   ;; This fixes a flash of another buffer when opening things from the terminal.
@@ -527,55 +547,55 @@ you should place your code here."
 
   ;; ivy
   ;; Use fuzzy finder
-  (setq ivy-re-builders-alist
-        '((message-tab . ivy--regex-ignore-order)
-          (swiper . ivy--regex-plus)
-          (t . ivy--regex-fuzzy)))
+  ;; (setq ivy-re-builders-alist
+  ;;       '((message-tab . ivy--regex-ignore-order)
+  ;;         (swiper . ivy--regex-plus)
+  ;;         (t . ivy--regex-fuzzy)))
   ;; Do not insert ^
-  (setq ivy-initial-inputs-alist nil)
-  (add-to-list 'ivy-sort-functions-alist '(message-tab))
+  ;; (setq ivy-initial-inputs-alist nil)
+  ;; (add-to-list 'ivy-sort-functions-alist '(message-tab))
 
   ;; Add `M-o v' and `M-o s' to open projectile files and buffers in splits
   ;; from ivy
-  (with-eval-after-load 'counsel-projectile
-    (ivy-set-actions
-     'counsel-projectile-find-file
-     '(("v" aj/projectile-find-file-vsplit "in vertical split")
-       ("s" aj/projectile-find-file-split "in horizontal split")
-       ("d" aj/projectile-delete-file-confirm "delete file"))))
-  (ivy-set-actions
-   'ivy-switch-buffer
-   '(("v" aj/pop-to-buffer-vsplit "in vertical split")
-     ("s" aj/pop-to-buffer-split "in horizontal split")))
+  ;; (with-eval-after-load 'counsel-projectile
+  ;;   (ivy-set-actions
+  ;;    'counsel-projectile-find-file
+  ;;    '(("v" aj/projectile-find-file-vsplit "in vertical split")
+  ;;      ("s" aj/projectile-find-file-split "in horizontal split")
+  ;;      ("d" aj/projectile-delete-file-confirm "delete file"))))
+  ;; (ivy-set-actions
+  ;;  'ivy-switch-buffer
+  ;;  '(("v" aj/pop-to-buffer-vsplit "in vertical split")
+  ;;    ("s" aj/pop-to-buffer-split "in horizontal split")))
   ;; Add i and w to ivy actions to insert/copy the selection
-  (ivy-set-actions
-   t
-   '(("i" aj/ivy-insert "insert")
-     ("w" aj/ivy-kill-new "copy")))
-  (ivy-set-actions
-   'spacemacs/counsel-search
-   spacemacs--ivy-grep-actions)
+  ;; (ivy-set-actions
+  ;;  t
+  ;;  '(("i" aj/ivy-insert "insert")
+  ;;    ("w" aj/ivy-kill-new "copy")))
+  ;; (ivy-set-actions
+  ;;  'spacemacs/counsel-search
+  ;;  spacemacs--ivy-grep-actions)
 
-  (defun aj/projectile-find-file-split (file)
-    (spacemacs/find-file-split (expand-file-name file (projectile-project-root))))
-  (defun aj/projectile-find-file-vsplit (file)
-    (spacemacs/find-file-vsplit (expand-file-name file (projectile-project-root))))
-  (defun aj/projectile-delete-file-confirm (file)
-    (spacemacs/delete-file-confirm (expand-file-name file (projectile-project-root))))
-  (defun aj/pop-to-buffer-vsplit (buffer)
-    (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . right))))
-  (defun aj/pop-to-buffer-split (buffer)
-    (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . below))))
-  (defun aj/ivy-insert (x)
-    (insert
-     (if (stringp x)
-         x
-       (car x))))
-  (defun aj/ivy-kill-new (x)
-    (kill-new
-     (if (stringp x)
-         x
-       (car x))))
+  ;; (defun aj/projectile-find-file-split (file)
+  ;;   (spacemacs/find-file-split (expand-file-name file (projectile-project-root))))
+  ;; (defun aj/projectile-find-file-vsplit (file)
+  ;;   (spacemacs/find-file-vsplit (expand-file-name file (projectile-project-root))))
+  ;; (defun aj/projectile-delete-file-confirm (file)
+  ;;   (spacemacs/delete-file-confirm (expand-file-name file (projectile-project-root))))
+  ;; (defun aj/pop-to-buffer-vsplit (buffer)
+  ;;   (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . right))))
+  ;; (defun aj/pop-to-buffer-split (buffer)
+  ;;   (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . below))))
+  ;; (defun aj/ivy-insert (x)
+  ;;   (insert
+  ;;    (if (stringp x)
+  ;;        x
+  ;;      (car x))))
+  ;; (defun aj/ivy-kill-new (x)
+  ;;   (kill-new
+  ;;    (if (stringp x)
+  ;;        x
+  ;;      (car x))))
 
   (setq
    ;; Use bash because it's faster
@@ -598,9 +618,6 @@ you should place your code here."
   ;; (define-key key-translation-map "\C-j" "\C-x")
   (global-set-key (kbd "<s-return>") 'spacemacs/toggle-fullscreen-frame)
 
-  ;; Word wrap in text buffers
-  ;; (add-hook 'text-mode-hook 'auto-fill-mode)
-
   ;; Don't copy text to system clipboard while selecting it
   (fset 'evil-visual-update-x-selection 'ignore)
 
@@ -619,5 +636,7 @@ you should place your code here."
 
   ;; load private settings
   (when (file-exists-p "~/.emacs-private.el")
-    (load-file "~/.emacs-private.el")))
+    (load-file "~/.emacs-private.el"))
 
+  (toggle-frame-fullscreen)
+  )
