@@ -545,58 +545,6 @@ you should place your code here."
   (setq persp-kill-foreign-buffer-behaviour nil)
   (setq dtrt-indent-max-merge-deviation 9.0)
 
-  ;; ivy
-  ;; Use fuzzy finder
-  ;; (setq ivy-re-builders-alist
-  ;;       '((message-tab . ivy--regex-ignore-order)
-  ;;         (swiper . ivy--regex-plus)
-  ;;         (t . ivy--regex-fuzzy)))
-  ;; Do not insert ^
-  ;; (setq ivy-initial-inputs-alist nil)
-  ;; (add-to-list 'ivy-sort-functions-alist '(message-tab))
-
-  ;; Add `M-o v' and `M-o s' to open projectile files and buffers in splits
-  ;; from ivy
-  ;; (with-eval-after-load 'counsel-projectile
-  ;;   (ivy-set-actions
-  ;;    'counsel-projectile-find-file
-  ;;    '(("v" aj/projectile-find-file-vsplit "in vertical split")
-  ;;      ("s" aj/projectile-find-file-split "in horizontal split")
-  ;;      ("d" aj/projectile-delete-file-confirm "delete file"))))
-  ;; (ivy-set-actions
-  ;;  'ivy-switch-buffer
-  ;;  '(("v" aj/pop-to-buffer-vsplit "in vertical split")
-  ;;    ("s" aj/pop-to-buffer-split "in horizontal split")))
-  ;; Add i and w to ivy actions to insert/copy the selection
-  ;; (ivy-set-actions
-  ;;  t
-  ;;  '(("i" aj/ivy-insert "insert")
-  ;;    ("w" aj/ivy-kill-new "copy")))
-  ;; (ivy-set-actions
-  ;;  'spacemacs/counsel-search
-  ;;  spacemacs--ivy-grep-actions)
-
-  ;; (defun aj/projectile-find-file-split (file)
-  ;;   (spacemacs/find-file-split (expand-file-name file (projectile-project-root))))
-  ;; (defun aj/projectile-find-file-vsplit (file)
-  ;;   (spacemacs/find-file-vsplit (expand-file-name file (projectile-project-root))))
-  ;; (defun aj/projectile-delete-file-confirm (file)
-  ;;   (spacemacs/delete-file-confirm (expand-file-name file (projectile-project-root))))
-  ;; (defun aj/pop-to-buffer-vsplit (buffer)
-  ;;   (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . right))))
-  ;; (defun aj/pop-to-buffer-split (buffer)
-  ;;   (pop-to-buffer buffer '(spacemacs//display-in-split (split-side . below))))
-  ;; (defun aj/ivy-insert (x)
-  ;;   (insert
-  ;;    (if (stringp x)
-  ;;        x
-  ;;      (car x))))
-  ;; (defun aj/ivy-kill-new (x)
-  ;;   (kill-new
-  ;;    (if (stringp x)
-  ;;        x
-  ;;      (car x))))
-
   (setq
    ;; Use bash because it's faster
    shell-file-name "/bin/bash"
@@ -624,12 +572,12 @@ you should place your code here."
   ;; Remap paste to be able to paste multiple times
   ;; If I don't like this, maybe I'll try this:
   ;; https://github.com/Dewdrops/evil-ReplaceWithRegister/
-  (defun evil-paste-after-from-0 ()
-    (interactive)
-    (let ((evil-this-register ?0))
-      (call-interactively 'evil-paste-after)))
+  ;; (defun evil-paste-after-from-0 ()
+  ;;   (interactive)
+  ;;   (let ((evil-this-register ?0))
+  ;;     (call-interactively 'evil-paste-after)))
 
-  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+  ;; (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
 
   ;; Pairing stuff
   (global-set-key (kbd "<end>") 'evil-end-of-line)
