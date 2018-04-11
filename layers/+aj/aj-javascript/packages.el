@@ -5,6 +5,7 @@
     eslintd-fix
     flycheck
     prettier-js
+    tide
     rjsx-mode))
 
 
@@ -56,6 +57,27 @@
     (push 'json-jsonlint flycheck-disabled-checkers))
 
   (spacemacs/enable-flycheck 'rjsx-mode))
+
+(defun aj-javascript/post-init-tide ()
+    ;; (with-eval-after-load 'tide
+    ;;     (flycheck-add-mode 'javascript-tide 'react-mode)
+    ;;     (flycheck-add-mode 'javascript-tide 'rjsx-mode)
+    ;;     (flycheck-add-next-checker 'javascript-tide 'javascript-eslint)
+
+    ;;     (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    ;;     (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+    ;;     )
+
+    (with-eval-after-load 'rjsx-mode
+        (add-hook 'rjsx-mode-hook #'aj-javascript/setup-tide-mode)
+
+        (spacemacs/set-leader-keys-for-major-mode 'rjsx-mode
+            "g" 'tide-jump-to-definition
+            "b" 'tide-jump-back
+            "r" 'tide-references
+            "R" 'tide-rename-symbol
+            "O" 'tide-organize-imports
+            "V" 'tide-verify-setup)))
 
 (defun aj-javascript/init-prettier-js ()
   (use-package prettier-js
