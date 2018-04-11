@@ -59,8 +59,8 @@ This function should only modify configuration layer settings."
 
      ;; Personal layers
      ;; aj-elixir
-     aj-javascript
      aj-typescript
+     aj-javascript
      fix-git-autorevert
      flow
      match-indent
@@ -75,6 +75,7 @@ This function should only modify configuration layer settings."
      company-flx
      base16-theme
      color-theme-sanityinc-tomorrow
+     doom-themes
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -153,7 +154,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(sanityinc-tomorrow-eighties)
+   dotspacemacs-themes '(doom-one)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -467,8 +468,6 @@ you should place your code here."
    grep-find-ignored-directories projectile-globally-ignored-directories
    grep-find-ignored-files projectile-globally-ignored-files
 
-   powerline-default-separator 'utf-8
-
    mouse-wheel-scroll-amount '(2 ((shift) . 1) ((control) . nil))
    mouse-wheel-progressive-speed nil
    )
@@ -526,7 +525,7 @@ you should place your code here."
 
   (spacemacs|do-after-display-system-init
    (setq powerline-default-separator 'alternate)
-   (setq spaceline-version-control-p nil)
+   ;; (setq spaceline-version-control-p nil)
    (spaceline-compile))
 
   ;; Indentation
