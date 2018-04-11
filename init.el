@@ -550,7 +550,7 @@ you should place your code here."
    shell-file-name "/bin/bash"
 
    ;; Spaceline
-   spaceline-minor-modes-p nil
+   ;; spaceline-minor-modes-p nil
 
    ;; File name completion
    read-file-name-completion-ignore-case t
@@ -586,5 +586,5 @@ you should place your code here."
   (when (file-exists-p "~/.emacs-private.el")
     (load-file "~/.emacs-private.el"))
 
-  (toggle-frame-fullscreen)
+  ;; (toggle-frame-fullscreen)
   )
