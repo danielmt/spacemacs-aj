@@ -39,6 +39,7 @@
     :config
     (define-key rjsx-mode-map "<" nil)
     (define-key rjsx-mode-map (kbd "C-d") nil)
+    (define-key rjsx-mode-map ">" nil)
     (modify-syntax-entry ?_ "w" js2-mode-syntax-table)))
 
 (defun aj-javascript/post-init-add-node-modules-path ()
