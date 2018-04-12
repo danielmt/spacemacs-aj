@@ -521,6 +521,7 @@ you should place your code here."
 
   (spacemacs|do-after-display-system-init
    (setq powerline-default-separator 'alternate)
+   (setq spaceline-minor-modes-p nil)
    ;; (setq spaceline-version-control-p nil)
    (spaceline-compile))
 
