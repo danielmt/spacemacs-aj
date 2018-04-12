@@ -503,19 +503,11 @@ you should place your code here."
      mac-command-modifier 'super
      mac-option-modifier 'meta
      ns-auto-hide-menu-bar nil
-     insert-directory-program "/usr/local/bin/gls")
-
-    (bb/define-key global-map
-      [home] 'beginning-of-line
-      [end] 'end-of-line)
-    )
+     insert-directory-program "/usr/local/bin/gls"))
 
   ;; fix hash key
   (define-key winum-keymap "\M-3" nil)
   (global-set-key (kbd "M-3")(lambda () (interactive) (insert "#")))
-
-  (bb/define-key evil-motion-state-map
-    [backspace] 'smex)
 
   ;; Prefer dumb-jump over evil to definition
   (setq spacemacs-default-jump-handlers (delete 'dumb-jump-go spacemacs-default-jump-handlers))
@@ -553,9 +545,6 @@ you should place your code here."
    ;; Use bash because it's faster
    shell-file-name "/bin/bash"
 
-   ;; Spaceline
-   ;; spaceline-minor-modes-p nil
-
    ;; File name completion
    read-file-name-completion-ignore-case t
    read-buffer-completion-ignore-case t
@@ -566,9 +555,13 @@ you should place your code here."
 
   (setq avy-timeout-seconds 0.2)
 
-  ;; Use C-j in place of C-x
-  ;; (define-key key-translation-map "\C-j" "\C-x")
   (global-set-key (kbd "<s-return>") 'spacemacs/toggle-fullscreen-frame)
+
+  (global-set-key (kbd "<home>") 'mwim-beginning-of-code-or-line)
+  (global-set-key (kbd "<end>") 'mwim-end-of-code-or-line)
+
+  (bb/define-key evil-motion-state-map
+      [backspace] 'smex)
 
   ;; Don't copy text to system clipboard while selecting it
   (fset 'evil-visual-update-x-selection 'ignore)
@@ -584,7 +577,7 @@ you should place your code here."
   ;; (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
 
   ;; Pairing stuff
-  (global-set-key (kbd "<end>") 'evil-end-of-line)
+  ;; (global-set-key (kbd "<end>") 'evil-end-of-line)
 
   ;; load private settings
   (when (file-exists-p "~/.emacs-private.el")
