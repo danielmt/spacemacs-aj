@@ -26,36 +26,38 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     emacs-lisp
-     better-defaults
-     spacemacs-layouts
      helm
-     markdown
-     (syntax-checking :variables
-                      syntax-checking-enable-tooltips t)
      (auto-completion :variables
-                      auto-completion-return-key-behavior 'complete
-                      auto-completion-tab-key-behavior 'cycle
-                      auto-completion-enable-sort-by-usage nil
-                      auto-completion-enable-snippets-in-popup nil
-                      :disabled-for org)
+         auto-completion-return-key-behavior 'complete
+         auto-completion-tab-key-behavior 'cycle
+         auto-completion-enable-sort-by-usage nil
+         auto-completion-enable-snippets-in-popup nil
+         :disabled-for org)
+     (better-defaults :variables
+         better-defaults-move-to-end-of-code-first nil)
+
+     ranger
+     emacs-lisp
+     (syntax-checking :variables
+         syntax-checking-enable-tooltips t)
+     version-control
      git
+
+     spacemacs-layouts
+     markdown
      dash
      html
      org
      colors
-     (osx :variables osx-command-as 'super)
-     ranger
-     version-control
+     (osx :variables
+         osx-command-as 'super)
      yaml
      ;;docker
      restclient
      deft
+     smex
 
-     ;; TheBB's layers
-     ;; https://github.com/TheBB/spacemacs-layers
-     ;; no-dots
-     ;; evil-little-word
+     python
 
      ;; Personal layers
      ;; aj-elixir
@@ -64,7 +66,6 @@ This function should only modify configuration layer settings."
      fix-git-autorevert
      flow
      match-indent
-     smex
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
