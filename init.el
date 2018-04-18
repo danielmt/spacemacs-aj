@@ -421,6 +421,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;;   (company-flx-mode +1))
   ;; Speed up autocomplete popup
   (setq company-idle-delay 0.1)
+  (setq company-tooltip-align-annotations t)
 
   (add-hook 'before-make-frame-hook
             (lambda ()
