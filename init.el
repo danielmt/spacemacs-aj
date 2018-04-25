@@ -49,8 +49,8 @@ This function should only modify configuration layer settings."
      html
      org
      colors
-     (osx :variables
-         osx-command-as 'super)
+     ;; (osx :variables
+     ;;     osx-command-as 'super)
      yaml
      ;;docker
      restclient
@@ -58,6 +58,8 @@ This function should only modify configuration layer settings."
      smex
 
      python
+     java
+     kotlin
 
      ;; Personal layers
      ;; aj-elixir
@@ -449,15 +451,19 @@ you should place your code here."
   (setq
 
    create-lockfiles nil
+   make-backup-files nil
+   auto-save-default nil
 
    avy-all-windows 'all-frames
-   deft-directory "~/Dropbox/notes"
 
    ;; indent
    indent-tabs-mode nil
    tab-width 2
    default-tab-width 2
    standard-indent 2
+   sh-basic-offset 2
+   sh-indentation 2
+   css-indent-offset 2
 
    ;; helm/ranger
    helm-ag-use-grep-ignore-list t
@@ -475,6 +481,19 @@ you should place your code here."
 
    mouse-wheel-scroll-amount '(2 ((shift) . 1) ((control) . nil))
    mouse-wheel-progressive-speed nil
+
+   ;; Use bash because it's faster
+   shell-file-name "/bin/bash"
+
+   ;; File name completion
+   read-file-name-completion-ignore-case t
+   read-buffer-completion-ignore-case t
+
+   ;; Miscellaneous
+   vc-follow-symlinks t
+   require-final-newline t
+
+   avy-timeout-seconds 0.2
    )
 
   ;; Stop demanding confirmation to go over 50 characters on first line
@@ -526,14 +545,6 @@ you should place your code here."
    ;; (setq spaceline-version-control-p nil)
    (spaceline-compile))
 
-  ;; Indentation
-  (setq
-   sh-basic-offset 2
-   sh-indentation 2
-   css-indent-offset 2)
-
-  ;; (spacemacs/enable-flycheck 'sh-mode)
-
   ;; Prevent persp from loading existing perspectives when opening new frames.
   ;; This fixes a flash of another buffer when opening things from the terminal.
   ;; https://github.com/Bad-ptr/persp-mode.el/issues/64
@@ -542,20 +553,6 @@ you should place your code here."
   ;; Don't care if I kill a buffer from a foreign persp
   (setq persp-kill-foreign-buffer-behaviour nil)
   (setq dtrt-indent-max-merge-deviation 9.0)
-
-  (setq
-   ;; Use bash because it's faster
-   shell-file-name "/bin/bash"
-
-   ;; File name completion
-   read-file-name-completion-ignore-case t
-   read-buffer-completion-ignore-case t
-
-   ;; Miscellaneous
-   vc-follow-symlinks t
-   require-final-newline t)
-
-  (setq avy-timeout-seconds 0.2)
 
   (global-set-key (kbd "<s-return>") 'spacemacs/toggle-fullscreen-frame)
 
@@ -587,3 +584,23 @@ you should place your code here."
 
   ;; (toggle-frame-fullscreen)
   )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (yasnippet-snippets yapfify yaml-mode ws-butler winum web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen unfill toc-org tide typescript-mode tagedit symon string-inflection spaceline-all-the-icons spaceline powerline smex smeargle slim-mode scss-mode sass-mode rjsx-mode restclient-helm restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox spinner overseer origami orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-bullets org-brain open-junk-file ob-restclient ob-http neotree nameless mwim mvn move-text mmm-mode meghanada maven-test-mode markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum livid-mode skewer-mode live-py-mode linum-relative link-hint less-css-mode kotlin-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc indent-guide importmagic epc ctable concurrent deferred impatient-mode simple-httpd hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode groovy-mode groovy-imports pcache gradle-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip flycheck-kotlin flycheck-flow flycheck flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub let-alist with-editor evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu highlight eslintd-fix ensime sbt-mode scala-mode emmet-mode elisp-slime-nav editorconfig dumb-jump dtrt-indent doom-themes all-the-icons memoize diff-hl deft define-word dash-at-point cython-mode counsel-projectile projectile counsel swiper ivy pkg-info epl company-web web-completion-data company-statistics company-restclient restclient know-your-http-well company-flx flx company-flow company-emacs-eclim eclim company-anaconda company column-enforce-mode color-theme-sanityinc-tomorrow color-identifiers-mode coffee-mode clean-aindent-mode centered-cursor-mode browse-at-remote base16-theme auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent add-node-modules-path adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core ac-ispell auto-complete popup which-key use-package org-plus-contrib hydra font-lock+ exec-path-from-shell evil goto-chg undo-tree diminish bind-map bind-key async))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
