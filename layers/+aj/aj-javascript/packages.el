@@ -60,14 +60,14 @@
   (spacemacs/enable-flycheck 'rjsx-mode))
 
 (defun aj-javascript/post-init-tide ()
-    ;; (with-eval-after-load 'tide
-    ;;     (flycheck-add-mode 'javascript-tide 'react-mode)
-    ;;     (flycheck-add-mode 'javascript-tide 'rjsx-mode)
-    ;;     (flycheck-add-next-checker 'javascript-tide 'javascript-eslint)
+  (with-eval-after-load 'tide
+    ;; (flycheck-add-mode 'javascript-tide 'rjsx-mode)
+    ;; (flycheck-add-next-checker 'javascript-tide 'javascript-eslint)
 
-    ;;     (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-    ;;     (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
-    ;;     )
+    ;; (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    ;; (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+    )
 
     (with-eval-after-load 'rjsx-mode
         (add-hook 'rjsx-mode-hook #'aj-javascript/setup-tide-mode)

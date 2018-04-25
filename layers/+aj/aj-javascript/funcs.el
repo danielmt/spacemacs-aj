@@ -14,18 +14,18 @@
 
 (defun aj-javascript/setup-tide-mode ()
     (interactive)
-    (setq
-        tide-format-options '(:indentSize 2 :indentStyle 2 :tabSize 2 :ConvertTabsToSpaces t)
-        tide-tsserver-executable "/usr/local/bin/tsserver")
-
     (tide-setup)
-
     (flycheck-mode +1)
+    (eldoc-mode +1)
+    (company-mode +1)
+    (tide-hl-identifier-mode +1)
 
     (setq
-        flycheck-check-syntax-automatically '(save idle-change mode-enabled))
+        flycheck-check-syntax-automatically '(save mode-enabled)
 
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1)
-    (company-mode +1)
+        tide-format-options '(:indentSize 2 :indentStyle 2 :tabSize 2 :ConvertTabsToSpaces t)
+        tide-tsserver-executable "/usr/local/bin/tsserver"
+        tide-completion-detailed t
+        tide-always-show-documentation t
+        )
     )
