@@ -9,10 +9,10 @@
   (use-package flycheck-flow
     :config
     (progn
-      (setq-default flycheck-disabled-checkers '(javascript-flow-coverage))
-      (flycheck-add-mode 'javascript-flow 'react-mode)
-      (flycheck-add-mode 'javascript-flow 'rjsx-mode)
-      (flycheck-add-next-checker 'javascript-flow 'javascript-eslint))))
+      (delete 'javascript-flow-coverage flycheck-checkers)
+      ;; (flycheck-add-mode 'javascript-flow 'rjsx-mode)
+      (flycheck-add-next-checker 'javascript-eslint 'javascript-flow)
+    )))
 
 (defun flow/init-company-flow ()
   (use-package company-flow
